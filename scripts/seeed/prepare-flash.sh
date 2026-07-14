@@ -5,18 +5,18 @@ set -euo pipefail
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 REPO_ROOT=$(cd -- "$SCRIPT_DIR/../.." && pwd)
 
-BUILD_DIR=${BUILD_DIR:-build-recomputer-super}
+BUILD_DIR=${BUILD_DIR:-build-seeed}
 MACHINE=${MACHINE:-recomputer-orin-super-j401}
 IMAGE=${IMAGE:-demo-image-full}
-OUTPUT_DIR=${OUTPUT_DIR:-$HOME/recomputer-super-flash}
+OUTPUT_DIR=${OUTPUT_DIR:-$HOME/seeed-flash-$MACHINE}
 ARCHIVE=
 
 usage() {
     cat <<EOF
 Usage: $(basename "$0") [options]
 
-Verify and extract the reComputer Super tegraflash package into a clean,
-separate directory. This script does not run sudo or flash the target.
+Verify and extract a Seeed machine tegraflash package into a clean, separate
+directory. This script does not run sudo or flash the target.
 
 Options:
   --archive FILE    Explicit .tegraflash-tar.zst archive
@@ -101,12 +101,15 @@ required_files=(
     flashvars
     .env.initrd-flash
     "$IMAGE.ext4"
-    recomputer-super-orin-j401-gpio-p3767-hdmi-a03.dtsi
-    recomputer-super-orin-j401-padvoltage-p3767-hdmi-a03.dtsi
-    recomputer-super-orin-j401-pinmux-p3767-hdmi-a03.dtsi
-    tegra234-j401-p3768-0000+p3767-0000-recomputer-super.dtb
-    tegra234-bpmp-3767-0000-3768-super.dtb
 )
+
+for variable in DTB_FILE BPFDTB_FILE PINMUX_CONFIG PMC_CONFIG; do
+    value=$(sed -n "s/^${variable}=\"\{0,1\}\([^\"]*\)\"\{0,1\}$/\1/p" \
+        "$OUTPUT_DIR/flashvars" | tail -1)
+    if [[ -n $value && $value != *@* ]]; then
+        required_files+=("$value")
+    fi
+done
 
 for file in "${required_files[@]}"; do
     if [[ ! -s "$OUTPUT_DIR/$file" ]]; then

@@ -26,7 +26,7 @@ layers/meta-seeed/docs/board-support-status.md
 也可以生成详细的 L4T 配置清单：
 
 ```bash
-./scripts/recomputer-super/discover-l4t-boards.sh \
+./scripts/seeed/discover-l4t-boards.sh \
   --l4t-dir ../Linux_for_Tegra \
   > /tmp/seeed-l4t-board-inventory.md
 ```
@@ -118,19 +118,19 @@ cd tegra-demo-distro
 仓库提供：
 
 ```text
-scripts/recomputer-super/prepare-workspace.sh
+scripts/seeed/prepare-workspace.sh
 ```
 
 默认执行：
 
 ```bash
-./scripts/recomputer-super/prepare-workspace.sh
+./scripts/seeed/prepare-workspace.sh
 ```
 
 它会：
 
 1. 同步并以 shallow 模式初始化锁定的 submodule；
-2. 创建 `build-recomputer-super`；
+2. 创建 `build-seeed`；
 3. 选择 `recomputer-orin-super-j401` machine；
 4. 在用户 cache 目录创建共享 downloads 和 sstate；
 5. 生成独立 cache 配置，不把缓存写进 Git。
@@ -139,16 +139,16 @@ scripts/recomputer-super/prepare-workspace.sh
 
 ```text
 source:    当前 Git checkout
-build:     ./build-recomputer-super
-downloads: ~/.cache/yocto-recomputer-super/downloads
-sstate:    ~/.cache/yocto-recomputer-super/sstate-cache
+build:     ./build-seeed
+downloads: ~/.cache/yocto-seeed/downloads
+sstate:    ~/.cache/yocto-seeed/sstate-cache
 ```
 
 如果有大容量本地 SSD，可以指定缓存位置：
 
 ```bash
-./scripts/recomputer-super/prepare-workspace.sh \
-  --build-dir /data/yocto/build-recomputer-super \
+./scripts/seeed/prepare-workspace.sh \
+  --build-dir /data/yocto/build-seeed \
   --cache-dir /data/yocto/cache
 ```
 
@@ -157,7 +157,7 @@ sstate:    ~/.cache/yocto-recomputer-super/sstate-cache
 查看全部选项：
 
 ```bash
-./scripts/recomputer-super/prepare-workspace.sh --help
+./scripts/seeed/prepare-workspace.sh --help
 ```
 
 ### 0.5 推荐的分阶段编译教程
@@ -165,50 +165,50 @@ sstate:    ~/.cache/yocto-recomputer-super/sstate-cache
 统一构建入口：
 
 ```text
-scripts/recomputer-super/build.sh
+scripts/seeed/build.sh
 ```
 
 第一步，检查 layer、recipe 和最终变量：
 
 ```bash
-./scripts/recomputer-super/build.sh metadata
+./scripts/seeed/build.sh metadata
 ```
 
 第二步，只编译 DTB/DTBO：
 
 ```bash
-./scripts/recomputer-super/build.sh dtb
+./scripts/seeed/build.sh dtb
 ```
 
 第三步，安装并检查 Seeed BCT/pinmux 文件：
 
 ```bash
-./scripts/recomputer-super/build.sh bootfiles
+./scripts/seeed/build.sh bootfiles
 ```
 
 第四步，构建完整镜像：
 
 ```bash
-./scripts/recomputer-super/build.sh image
+./scripts/seeed/build.sh image
 ```
 
 如果只修改了 tegraflash 打包逻辑，可以重建刷写包并发布到 deploy：
 
 ```bash
-./scripts/recomputer-super/build.sh flash-package
+./scripts/seeed/build.sh flash-package
 ```
 
 生成交叉开发 SDK：
 
 ```bash
-./scripts/recomputer-super/build.sh sdk
+./scripts/seeed/build.sh sdk
 ```
 
 构建脚本支持其他 build 目录：
 
 ```bash
-./scripts/recomputer-super/build.sh image \
-  --build-dir /data/yocto/build-recomputer-super
+./scripts/seeed/build.sh image \
+  --build-dir /data/yocto/build-seeed
 ```
 
 ### 0.6 校验并解压刷写包
@@ -216,7 +216,7 @@ scripts/recomputer-super/build.sh
 不要在 deploy 目录中直接解压，也不要把刷写目录放在 USB 移动硬盘上。使用：
 
 ```bash
-./scripts/recomputer-super/prepare-flash.sh \
+./scripts/seeed/prepare-flash.sh \
   --output-dir ~/recomputer-super-flash
 ```
 
@@ -244,7 +244,7 @@ sudo ./initrd-flash
 └── tegra-demo-distro/              # Git 源码，体积较小
 
 /data/yocto/
-├── build-recomputer-super/         # 可删除、可重建
+├── build-seeed/         # 可删除、可重建
 └── cache/
     ├── downloads/                  # 可跨 build 复用
     └── sstate-cache/                # 可跨 build 复用
@@ -490,7 +490,7 @@ LAYERSERIES_COMPAT_seeed = "wrynose"
 检查 layer 是否生效：
 
 ```bash
-. ./setup-env --machine recomputer-orin-super-j401 build-recomputer-super
+. ./setup-env --machine recomputer-orin-super-j401 build-seeed
 bitbake-layers show-layers
 ```
 
@@ -660,7 +660,7 @@ bitbake -f -c install tegra-bootfiles
 然后检查：
 
 ```text
-build-recomputer-super/tmp/work/<machine-triplet>/tegra-bootfiles/39.2.0/image/usr/share/tegraflash/
+build-seeed/tmp/work/<machine-triplet>/tegra-bootfiles/39.2.0/image/usr/share/tegraflash/
 ```
 
 ### 7.1 `do_install` 成功不等于进入刷写包
@@ -833,14 +833,14 @@ EXTRA_USERS_PARAMS = " \
 ### 9.4 推荐生成交叉 SDK
 
 ```bash
-. ./setup-env --machine recomputer-orin-super-j401 build-recomputer-super
+. ./setup-env --machine recomputer-orin-super-j401 build-seeed
 bitbake demo-image-full -c populate_sdk
 ```
 
 输出位于：
 
 ```text
-build-recomputer-super/tmp/deploy/sdk/
+build-seeed/tmp/deploy/sdk/
 ```
 
 应用团队可以安装 SDK 后交叉编译，不必在目标机安装 GCC/CMake。
@@ -853,7 +853,7 @@ build-recomputer-super/tmp/deploy/sdk/
 
 ```bash
 cd tegra-demo-distro
-. ./setup-env --machine recomputer-orin-super-j401 build-recomputer-super
+. ./setup-env --machine recomputer-orin-super-j401 build-seeed
 ```
 
 确认配置：
@@ -932,7 +932,7 @@ TEGRA_FLASHVAR_DCE_OVERLAY="tegra234-dcb-p3767-0000-hdmi.dtbo"
 ### 11.2 找到 tegraflash 包
 
 ```text
-build-recomputer-super/tmp/deploy/images/recomputer-orin-super-j401/
+build-seeed/tmp/deploy/images/recomputer-orin-super-j401/
 ```
 
 使用稳定软链接：

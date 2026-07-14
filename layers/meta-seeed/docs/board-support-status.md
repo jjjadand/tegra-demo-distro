@@ -45,5 +45,5 @@ and HDMI overlay but do not advertise the unbuildable dual-camera overlay.
 Run the matrix check with:
 
 ```bash
-./scripts/recomputer-super/validate-all-machines.sh
+./scripts/seeed/validate-all-machines.sh
 ```

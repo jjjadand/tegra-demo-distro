@@ -6,7 +6,7 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 REPO_ROOT=$(cd -- "$SCRIPT_DIR/../.." && pwd)
 
 MACHINE=${MACHINE:-recomputer-orin-super-j401}
-BUILD_DIR=${BUILD_DIR:-build-recomputer-super}
+BUILD_DIR=${BUILD_DIR:-build-seeed}
 IMAGE=${IMAGE:-demo-image-full}
 
 usage() {
@@ -79,6 +79,12 @@ case "$action" in
         ;;
 esac
 
+if [[ $action == machines ]]; then
+    find "$REPO_ROOT/layers/meta-seeed/conf/machine" -maxdepth 1 -name '*.conf' \
+        -printf '%f\n' | sed 's/\.conf$//' | sort
+    exit 0
+fi
+
 if [[ $BUILD_DIR != /* ]]; then
     BUILD_DIR="$REPO_ROOT/$BUILD_DIR"
 fi
@@ -90,10 +96,6 @@ set +u
 set -u
 
 case "$action" in
-    machines)
-        find "$REPO_ROOT/layers/meta-seeed/conf/machine" -maxdepth 1 -name '*.conf' \
-            -printf '%f\n' | sed 's/\.conf$//' | sort
-        ;;
     metadata)
         bitbake-layers show-layers
         bitbake-layers show-recipes seeed-devicetree
