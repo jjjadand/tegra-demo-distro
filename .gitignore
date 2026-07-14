@@ -1,4 +1,10 @@
 build*/
+downloads/
+sstate-cache/
+recomputer-super-flash/
+*.ext4
+*.tegraflash-tar
+*.tegraflash-tar.zst
 *~
 *.pyc
 *.pyo

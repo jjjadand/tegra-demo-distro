@@ -3,6 +3,22 @@
 Reference/demo distribution for NVIDIA Jetson platforms
 using Yocto Project tools and the [meta-tegra](https://github.com/OE4T/meta-tegra) BSP layer.
 
+## Seeed reComputer BSP DIY Guide
+
+This workspace includes a tested `meta-seeed` example for the reComputer Super J401 with Jetson Orin NX 16GB. The end-to-end Chinese guide covers L4T-to-Yocto BSP mapping, machine metadata, DTB/BCT integration, tegraflash packaging, flashing, troubleshooting, image customization, and production considerations. See [DIY reComputer Jetson BSP with Yocto/OE4T](layers/meta-seeed/docs/DIY-YOcto-recomputer-orin-super-j401.md).
+
+Quick start from a clean checkout:
+
+```bash
+./scripts/recomputer-super/prepare-workspace.sh
+./scripts/recomputer-super/build.sh metadata
+./scripts/recomputer-super/build.sh dtb
+./scripts/recomputer-super/build.sh image
+./scripts/recomputer-super/prepare-flash.sh --output-dir ~/recomputer-super-flash
+```
+
+Build output, downloads, sstate, rootfs images, and extracted flash packages are intentionally not stored in Git.
+
 ![Build status](https://builder.madison.systems/badges/tegrademo-wrynose.svg)
 
 Metadata layers are brought in as git submodules:

@@ -18,4 +18,5 @@ BBLAYERS ?= " \
   ##OEROOT##/meta-tegra-support \
   ##OEROOT##/meta-demo-ci \
   ##OEROOT##/meta-tegrademo \
+  ##OEROOT##/meta-seeed \
   "
