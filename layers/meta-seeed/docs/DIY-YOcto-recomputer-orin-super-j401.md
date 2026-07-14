@@ -274,14 +274,24 @@ Successfully finished
 ./scripts/seeed/prepare-flash.sh
 ```
 
-如果只想临时检查另一个已经 prepare 的 build 目录，可以为单条命令指定 `--build-dir`：
+对于已经 prepare 的 build 目录，也可以直接在任意 `build.sh` 命令中显式选择；成功校验后，它会成为后续命令的活动工作区：
+
+```bash
+./scripts/seeed/build.sh metadata \
+  --machine recomputer-orin-robotics-j401 \
+  --build-dir build-seeed-robotics-j401
+```
+
+上面的命令成功校验 build 目录中的 machine 后，后续 `dtb`、`bootfiles` 和 `image` 不再需要参数。若只想临时检查而不改变活动工作区，显式增加：
 
 ```bash
 ./scripts/seeed/build.sh current \
-  --build-dir build-seeed-industrial-j401
+  --machine recomputer-industrial-orin-j401 \
+  --build-dir build-seeed-industrial-j401 \
+  --no-activate
 ```
 
-这个临时参数不会改变活动工作区。`build.sh --machine` 只用于校验 build 目录，不能把已有 build 目录切换成另一块载板。
+`build.sh` 不会把一个已有 build 目录改成另一种 machine；新载板第一次构建仍必须先执行 `prepare-workspace.sh`。
 
 ### 0.9 全 machine 构建矩阵检查
 

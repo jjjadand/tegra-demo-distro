@@ -23,9 +23,10 @@ for each SoC family (`tegra234` and `tegra264`). It does not claim physical
 flash or peripheral validation.
 
 Use a separate build directory per machine when switching targets. Do not reuse
-an existing build directory for a different `MACHINE`. `--build-dir` temporarily
-selects another prepared directory without changing the active workspace;
-`--machine` only verifies the prepared directory's machine.
+an existing build directory for a different `MACHINE`. An explicit
+`build.sh --build-dir` selects that prepared directory and makes it active for
+later commands. Add `--no-activate` for a one-command temporary selection;
+`--machine` verifies the prepared directory's machine.
 
 The remaining workspace and flash helpers still accept their documented cache,
 image, archive, and extraction options.

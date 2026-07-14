@@ -8,6 +8,8 @@ REPO_ROOT=$(cd -- "$SCRIPT_DIR/../.." && pwd)
 EXPECTED_MACHINE=${MACHINE:-}
 BUILD_DIR=${BUILD_DIR:-}
 IMAGE=${IMAGE:-demo-image-full}
+BUILD_DIR_FROM_CLI=no
+ACTIVATE_WORKSPACE=yes
 
 usage() {
     cat <<EOF
@@ -25,8 +27,9 @@ Commands:
   clean          Clean the image recipe work directory
 
 Options:
-  --build-dir DIR  Temporarily use this prepared build directory
+  --build-dir DIR  Use and activate this prepared build directory
   --machine NAME   Verify that the prepared build uses this MACHINE
+  --no-activate    Do not change the active workspace for this command
   --image NAME     Image recipe (default: $IMAGE)
   -h, --help       Show this help
 EOF
@@ -48,6 +51,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --build-dir)
             BUILD_DIR=$2
+            BUILD_DIR_FROM_CLI=yes
             shift 2
             ;;
         --machine)
@@ -57,6 +61,10 @@ while [[ $# -gt 0 ]]; do
         --image)
             IMAGE=$2
             shift 2
+            ;;
+        --no-activate)
+            ACTIVATE_WORKSPACE=no
+            shift
             ;;
         -h|--help)
             usage
@@ -86,11 +94,12 @@ if [[ $action == machines ]]; then
     exit 0
 fi
 
+active_file=$(git -C "$REPO_ROOT" rev-parse --git-path seeed-active-build)
+if [[ $active_file != /* ]]; then
+    active_file="$REPO_ROOT/$active_file"
+fi
+
 if [[ -z $BUILD_DIR ]]; then
-    active_file=$(git -C "$REPO_ROOT" rev-parse --git-path seeed-active-build)
-    if [[ $active_file != /* ]]; then
-        active_file="$REPO_ROOT/$active_file"
-    fi
     if [[ -s $active_file ]]; then
         BUILD_DIR=$(<"$active_file")
     else
@@ -127,6 +136,12 @@ ERROR: requested MACHINE does not match the prepared build directory.
   Requested:  $EXPECTED_MACHINE
 EOF
     exit 1
+fi
+
+if [[ $BUILD_DIR_FROM_CLI == yes && $ACTIVATE_WORKSPACE == yes ]]; then
+    mkdir -p "$(dirname "$active_file")"
+    printf '%s\n' "$BUILD_DIR" > "$active_file"
+    echo "==> Activated Seeed workspace: $configured_machine ($BUILD_DIR)"
 fi
 
 if [[ $action == current ]]; then
