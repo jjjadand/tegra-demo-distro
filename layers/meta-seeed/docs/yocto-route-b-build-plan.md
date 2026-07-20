@@ -23,11 +23,23 @@ Seeed runtime/development/production images
 完成后，每个 Seeed `MACHINE` 都应拥有独立的构建目录、镜像、刷写包和验证记录。
 没有实机的载板只能标记为“构建验证/未实机验证”，不能声明硬件支持已验证。
 
+> **当前状态：** 本文是路线 B 的产品化实施规划，不是已完成清单。当前仓库仍以
+> `demo-image-full` 为默认 image；它已有 CUDA runtime/libraries、CUDA samples、
+> TensorRT/VPI/MMAPI tests，并可通过 `populate_sdk` 生成包含 CUDA host tools 的
+> OE4T 标准 SDK。本文规划的 Seeed runtime/development/production images、产品
+> packagegroups 和发布 SDK 尚待实现，状态以第 10 节任务清单为准。
+
 ## 2. 参考输入及使用边界
 
 ### 2.1 NVIDIA/OE4T 参考包
 
-当前参考包：
+当前参考输入是 NVIDIA/OE4T 生成的 tegraflash Zstandard 归档：
+
+```text
+$WORKSPACE_ROOT/demo-image-full-jetson-orin-nano-devkit-nvme.rootfs.tegraflash-tar.zst
+```
+
+分析前将其解压到独立的只读目录，例如：
 
 ```text
 $WORKSPACE_ROOT/demo-image-full-jetson-orin-nano-devkit-nvme.rootfs.tegraflash
@@ -108,13 +120,14 @@ $WORKSPACE_ROOT/Linux_for_Tegra
 WORKSPACE_ROOT=/path/to/jetson-workspace
 REPO_ROOT=$WORKSPACE_ROOT/seeed-tegra-demo-distro/tegra-demo-distro
 L4T_ROOT=$WORKSPACE_ROOT/Linux_for_Tegra
+REFERENCE_TEGRAFLASH_ZST=$WORKSPACE_ROOT/demo-image-full-jetson-orin-nano-devkit-nvme.rootfs.tegraflash-tar.zst
 REFERENCE_TEGRAFLASH_DIR=$WORKSPACE_ROOT/demo-image-full-jetson-orin-nano-devkit-nvme.rootfs.tegraflash
 CACHE_ROOT=$HOME/.cache/yocto-seeed
 RELEASE_ROOT=$WORKSPACE_ROOT/yocto-seeed-release
 ```
 
-`REPO_ROOT` 是唯一允许修改和提交 Yocto metadata 的目录。`L4T_ROOT` 与
-`REFERENCE_TEGRAFLASH_DIR` 作为只读输入使用。
+`REPO_ROOT` 是唯一允许修改和提交 Yocto metadata 的目录。`L4T_ROOT`、
+`REFERENCE_TEGRAFLASH_ZST` 与 `REFERENCE_TEGRAFLASH_DIR` 作为只读输入使用。
 
 ### 4.2 每 machine 独立构建目录
 
@@ -146,17 +159,17 @@ $CACHE_ROOT/sstate-cache
 cd "$REPO_ROOT"
 
 ./scripts/seeed/prepare-workspace.sh \
-  --machine reserver-agx-orin-j501x-gmsl \
-  --module-sku 0004 \
-  --build-dir build-seeed-reserver-j501x-gmsl-sku0004 \
+  --machine recomputer-orin-super-j401 \
+  --build-dir build-seeed-super-j401 \
   --cache-dir "$CACHE_ROOT"
 
 ./scripts/seeed/build.sh current
 ```
 
-`prepare-workspace.sh` 成功后，该 build 目录成为活动目录。AGX Orin 的
-`--module-sku` 同时固化到该目录。后续命令默认使用该 machine 和 module SKU，
-不需要反复传递参数。临时操作其他 build 目录时使用
+`prepare-workspace.sh` 成功后，该 build 目录成为活动目录。Super J401 当前固定
+P3767-0000，不传 `--module-sku`。AGX Orin machine 支持多个 module SKU，准备其
+build 目录时必须传 `--module-sku`，并把选择固化到该目录。后续命令默认使用该
+machine 和 module SKU，不需要反复传递参数。临时操作其他 build 目录时使用
 `--build-dir` 和 `--no-activate`，不能修改原 build 目录中的 `MACHINE`。
 
 ### 4.3 磁盘规划

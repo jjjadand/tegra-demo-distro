@@ -8,12 +8,8 @@ active for later commands.
 ```bash
 ./scripts/seeed/build.sh machines
 ./scripts/seeed/prepare-workspace.sh \
-  --machine recomputer-industrial-orin-j401 \
-  --build-dir build-seeed-industrial-j401
-./scripts/seeed/prepare-workspace.sh \
-  --machine reserver-agx-orin-j501x-gmsl \
-  --module-sku 0004 \
-  --build-dir build-seeed-reserver-j501x-gmsl-sku0004
+  --machine recomputer-orin-super-j401 \
+  --build-dir build-seeed-super-j401
 ./scripts/seeed/build.sh current
 ./scripts/seeed/build.sh all
 ./scripts/seeed/build.sh metadata

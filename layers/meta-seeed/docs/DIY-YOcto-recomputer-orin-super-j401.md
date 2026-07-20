@@ -132,7 +132,10 @@ cd tegra-demo-distro
 layers/meta-seeed/docs/board-support-status.md
 ```
 
-下面以 `recomputer-industrial-orin-j401` 为例。验证其他载板时，只替换下一节 prepare 命令中的 `--machine` 和 `--build-dir`；AGX Orin 还必须传入实际模组的 `--module-sku`。后面的命令不再重复传载板或模组参数。
+下面统一以 `recomputer-orin-super-j401` 为主流程示例。当前 machine 明确绑定
+Jetson Orin NX 16GB（P3767-0000），因此不传 `--module-sku`。验证其他载板时，
+只替换下一节 prepare 命令中的 `--machine` 和 `--build-dir`；只有当前支持多个
+模组 SKU 的 AGX Orin machine 才必须额外传入 `--module-sku`。
 
 ### 0.5 一次 prepare 固定载板、build 目录和共享缓存
 
@@ -142,19 +145,19 @@ layers/meta-seeed/docs/board-support-status.md
 $HOME/.cache/yocto-seeed
 ```
 
-验证 Industrial J401 时执行：
+验证 Super J401 时执行：
 
 ```bash
 ./scripts/seeed/prepare-workspace.sh \
-  --machine recomputer-industrial-orin-j401 \
-  --build-dir build-seeed-industrial-j401 \
+  --machine recomputer-orin-super-j401 \
+  --build-dir build-seeed-super-j401 \
   --cache-dir "$HOME/.cache/yocto-seeed"
 ```
 
 这条命令会：
 
 1. 初始化锁定的 submodule；
-2. 创建 `build-seeed-industrial-j401`；
+2. 创建 `build-seeed-super-j401`；
 3. 把 machine 固化到该目录的 `conf/local.conf`；
 4. 配置共享 `downloads` 和 `sstate-cache`；
 5. 把该 build 目录记录为当前 checkout 的活动工作区。
@@ -167,13 +170,18 @@ $HOME/.cache/yocto-seeed
 ./scripts/seeed/build.sh current
 ```
 
-Industrial J401 应显示：
+Super J401 应显示：
 
 ```text
-Machine:   recomputer-industrial-orin-j401
+Machine:   recomputer-orin-super-j401
 ```
 
-如果这里仍显示 Super，不要继续编译，应重新执行本节 prepare 命令。
+如果这里显示其他 machine，不要继续编译，应重新执行本节 prepare 命令。
+
+Super J401 当前通过 `p3768-0000-p3767-0000.conf` 固定 P3767-0000 模组；脚本会
+拒绝给它传 `--module-sku`。如果以后同一载板需要支持其他 Orin NX/Nano 模组，
+必须先增加对应 NVIDIA module config、DTB/BPMP/BCT 映射和独立 build 目录，不能
+只复用当前 machine 并在刷写时临时修改 SKU。
 
 ### 0.6 按顺序验证 metadata、DTB、BCT 和完整镜像
 
@@ -229,6 +237,16 @@ Tasks Summary: ... all succeeded.
 ./scripts/seeed/build.sh sdk
 ```
 
+当前默认 image 是 `demo-image-full`，它已经包含 `cuda-libraries`、CUDA samples、
+VPI tests、TensorRT tests 和 Tegra Multimedia API tests。其标准 Yocto SDK 通过
+`nativesdk-packagegroup-cuda-sdk-host` 提供 CUDA host tools，并携带与目标 rootfs
+匹配的交叉编译 sysroot。它属于 OE4T demo SDK，不等同于 Ubuntu JetPack SDK。
+
+路线 B 规划的 `seeed-image-jetson-runtime`、`seeed-image-jetson-development`、
+产品 packagegroups 及逐 machine SDK 还没有实现；相关组件边界、CUDA/cuDNN/
+TensorRT/VPI SDK 内容和验收项见
+`layers/meta-seeed/docs/yocto-route-b-build-plan.md`。
+
 如果希望一次完成本节的 metadata、DTB、BCT 和完整镜像构建，执行：
 
 ```bash
@@ -241,12 +259,13 @@ Tasks Summary: ... all succeeded.
 
 ```bash
 ./scripts/seeed/build.sh all \
-  --machine reserver-agx-orin-j501x-gmsl \
-  --build-dir build-seeed-reserver-j501x-gmsl-sku0004
+  --machine recomputer-orin-super-j401 \
+  --build-dir build-seeed-super-j401
 ```
 
-这条命令只选择已经 prepare 的目录，不接受 `--module-sku`，也不会修改目录中
-固化的 SKU。首次构建必须先按第 0.8 节执行 `prepare-workspace.sh`。
+这条命令只选择已经 prepare 的目录，不会修改其中的 machine；对于 AGX Orin，
+也不会修改目录中固化的 module SKU。首次构建必须先按第 0.5 节执行
+`prepare-workspace.sh`。
 
 ### 0.7 校验刷写包并执行实机刷写
 
@@ -261,7 +280,7 @@ Tasks Summary: ... all succeeded.
 将目标板进入 Force Recovery Mode 后，按脚本最后输出的目录执行：
 
 ```bash
-cd ~/seeed-flash-recomputer-industrial-orin-j401
+cd ~/seeed-flash-recomputer-orin-super-j401
 lsusb -d 0955:
 sudo ./initrd-flash
 ```
@@ -277,7 +296,7 @@ Successfully finished
 
 ### 0.8 切换到另一块载板
 
-例如从 Industrial J401 切换到 reServer AGX Orin J501x GMSL：
+例如从主示例 Super J401 切换到 reServer AGX Orin J501x GMSL：
 
 ```bash
 ./scripts/seeed/prepare-workspace.sh \
@@ -302,16 +321,16 @@ Successfully finished
 
 ```bash
 ./scripts/seeed/build.sh metadata \
-  --machine recomputer-orin-robotics-j401 \
-  --build-dir build-seeed-robotics-j401
+  --machine recomputer-orin-super-j401 \
+  --build-dir build-seeed-super-j401
 ```
 
 上面的命令成功校验 build 目录中的 machine 后，后续 `dtb`、`bootfiles` 和 `image` 不再需要参数。若只想临时检查而不改变活动工作区，显式增加：
 
 ```bash
 ./scripts/seeed/build.sh current \
-  --machine recomputer-industrial-orin-j401 \
-  --build-dir build-seeed-industrial-j401 \
+  --machine recomputer-orin-super-j401 \
+  --build-dir build-seeed-super-j401 \
   --no-activate
 ```
 
@@ -336,8 +355,8 @@ Successfully finished
 
 ```text
 tegra-demo-distro/                    # Git 源码
-├── build-seeed-industrial-j401/     # Industrial J401 专用，可重建
-├── build-seeed-reserver-j501x-gmsl/ # J501x GMSL 专用，可重建
+├── build-seeed-super-j401/          # Super J401 主示例，可重建
+├── build-seeed-reserver-j501x-gmsl-sku0004/ # AGX SKU 示例，可重建
 └── ...
 
 yocto-seeed-cache/
@@ -1005,8 +1024,8 @@ Tasks Summary: Attempted 13211 tasks ... all succeeded.
 
 ```bash
 ./scripts/seeed/prepare-workspace.sh \
-  --machine recomputer-industrial-orin-j401 \
-  --build-dir build-seeed-industrial-j401 \
+  --machine recomputer-orin-super-j401 \
+  --build-dir build-seeed-super-j401 \
   --cache-dir "$HOME/.cache/yocto-seeed"
 ```
 
