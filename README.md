@@ -13,6 +13,46 @@ See the
 [support matrix](layers/meta-seeed/docs/board-support-status.md) and the
 [end-to-end Chinese BSP guide](layers/meta-seeed/docs/DIY-YOcto-recomputer-orin-super-j401.md).
 
+### Carrier and module parameters
+
+The current Seeed helper supports the following carrier-board `MACHINE`
+values. A fixed-module machine gets its module configuration from the machine
+file and must **not** be given `--module-sku`. Only the AGX Orin machine rows
+marked below accept `--module-sku`; use one build directory for each carrier
+and module combination.
+
+| Carrier board | `MACHINE` | Module configuration | `--module-sku` |
+| --- | --- | --- | --- |
+| reComputer Industrial J401 | `recomputer-industrial-orin-j401` | Jetson Orin NX, `P3767-0000` | 不传 |
+| reComputer Mini AGX Orin J501X | `recomputer-mini-agx-orin-j501x` | AGX Orin `P3701-0004`/`P3701-0005` | `0004` or `0005` |
+| reComputer Orin J401 | `recomputer-orin-j401` | Jetson Orin NX, `P3767-0000` | 不传 |
+| reComputer Orin J40mini | `recomputer-orin-j40mini` | Jetson Orin NX, `P3767-0000` | 不传 |
+| reComputer Robotics J401 GMSL | `recomputer-orin-robotics-j401-gmsl` | Jetson Orin NX, `P3767-0000` | 不传 |
+| reComputer Robotics J401 | `recomputer-orin-robotics-j401` | Jetson Orin NX, `P3767-0000` | 不传 |
+| reComputer Super J401 | `recomputer-orin-super-j401` | Jetson Orin NX 16GB, `P3767-0000` | 不传 |
+| reComputer Robo AGX Orin J501X | `recomputer-robo-agx-orin-j501x` | AGX Orin `P3701-0004`/`P3701-0005` | `0004` or `0005` |
+| reComputer Rugged Orin J401 | `recomputer-rugged-orin-j401` | Jetson Orin NX, `P3767-0000` | 不传 |
+| reComputer Thor Carrier J601 | `recomputer-thor-carrier-j601` | AGX Thor, `P3834-0008` | 不传 |
+| reComputer Thor Carrier J6014 | `recomputer-thor-carrier-j6014` | AGX Thor, `P3834-0000` | 不传 |
+| reComputer Thor Carrier J6015 | `recomputer-thor-carrier-j6015` | AGX Thor, `P3834-0008` | 不传 |
+| reServer AGX Orin J501X GMSL | `reserver-agx-orin-j501x-gmsl` | AGX Orin | `0000`, `0001`, `0002`, `0004`, or `0005` |
+| reServer AGX Orin J501X | `reserver-agx-orin-j501x` | AGX Orin | `0000`, `0001`, `0002`, `0004`, or `0005` |
+| reServer Industrial Orin J401 | `reserver-industrial-orin-j401` | Jetson Orin NX, `P3767-0000` | 不传 |
+| Seeed AGX Orin Kit | `seeed-agx-orin-kit` | AGX Orin | `0000`, `0001`, `0002`, `0004`, or `0005` |
+
+For example, Super J401 is intentionally written without a module argument:
+its machine file directly requires the `P3768-0000` carrier plus the
+`P3767-0000` module configuration. Passing `--module-sku` to this machine is
+rejected by `prepare-workspace.sh`; it is not an omitted required parameter.
+For an AGX Orin carrier, select the SKU explicitly:
+
+```bash
+./scripts/seeed/prepare-workspace.sh \
+  --machine reserver-agx-orin-j501x-gmsl \
+  --module-sku 0004 \
+  --build-dir build-seeed-reserver-j501x-gmsl-sku0004
+```
+
 Quick start from a clean checkout:
 
 ```bash
