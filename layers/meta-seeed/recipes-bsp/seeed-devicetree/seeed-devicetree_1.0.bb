@@ -15,6 +15,7 @@ SRC_URI = " \
 "
 
 DT_FILES:tegra234 = " \
+    ${SEEED_DTB} \
     tegra234-j201-p3768-0000+p3767-0000-recomputer-indu.dtb \
     tegra234-j401-p3768-0000+p3767-0000-recomputer.dtb \
     tegra234-j401-p3768-0000+p3767-0000-recomputer-robo.dtb \
@@ -43,6 +44,20 @@ DT_FILES:tegra234 = " \
     tegra234-seeed-gmsl-recomputer-robo-3g-overlay.dtbo \
     tegra234-seeed-gmsl-recomputer-robo-6g-overlay.dtbo \
 "
+
+python do_compile:prepend:tegra234() {
+    import os
+    import shutil
+
+    template = d.getVar("SEEED_DTS_TEMPLATE")
+    if template:
+        generated = d.getVar("SEEED_DTB").removesuffix(".dtb") + ".dts"
+        if generated != template:
+            shutil.copyfile(
+                os.path.join(d.getVar("S"), template),
+                os.path.join(d.getVar("S"), generated),
+            )
+}
 
 DT_FILES:tegra264 = " \
     tegra264-p4071-0000+p3834-0000-recomputer-carrier.dtb \

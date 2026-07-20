@@ -160,16 +160,18 @@ cd "$REPO_ROOT"
 
 ./scripts/seeed/prepare-workspace.sh \
   --machine recomputer-orin-super-j401 \
+  --module-sku 0000 \
   --build-dir build-seeed-super-j401 \
   --cache-dir "$CACHE_ROOT"
 
 ./scripts/seeed/build.sh current
 ```
 
-`prepare-workspace.sh` 成功后，该 build 目录成为活动目录。Super J401 当前固定
-P3767-0000，不传 `--module-sku`。AGX Orin machine 支持多个 module SKU，准备其
-build 目录时必须传 `--module-sku`，并把选择固化到该目录。后续命令默认使用该
-machine 和 module SKU，不需要反复传递参数。临时操作其他 build 目录时使用
+`prepare-workspace.sh` 成功后，该 build 目录成为活动目录。J401 machine 支持
+P3767 `0000`、`0001`、`0003`、`0004` 四个 Orin NX/Nano module SKU；AGX Orin
+machine 也支持多个 module SKU。准备 build 目录时必须传 `--module-sku`，并把
+选择固化到该目录。后续命令默认使用该 machine 和 module SKU，不需要反复传递
+参数。临时操作其他 build 目录时使用
 `--build-dir` 和 `--no-activate`，不能修改原 build 目录中的 `MACHINE`。
 
 ### 4.3 磁盘规划
@@ -362,6 +364,7 @@ SDK 应包含：
 ```bash
 ./scripts/seeed/prepare-workspace.sh \
   --machine <seeed-machine> \
+  --module-sku <module-sku> \
   --build-dir build-seeed-<short-name> \
   --cache-dir "$CACHE_ROOT"
 

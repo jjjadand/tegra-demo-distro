@@ -14,7 +14,7 @@
 #define MFP10  TEGRA234_MAIN_GPIO(Z, 7)
 
 / {
-        compatible = "nvidia,p3768-0000+p3767-0000-super", "nvidia,p3767-0000", "nvidia,tegra234";
+        #include "seeed-j401-module-compat.dtsi"
         model = "NVIDIA Jetson Orin Nano Seeed recomputer classic Robotics";
         leds {
                 compatible = "gpio-leds";
@@ -62,3 +62,4 @@
 
      };
 };
+#include "seeed-j401-module-tuning.dtsi"

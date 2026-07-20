@@ -132,10 +132,11 @@ cd tegra-demo-distro
 layers/meta-seeed/docs/board-support-status.md
 ```
 
-下面统一以 `recomputer-orin-super-j401` 为主流程示例。当前 machine 明确绑定
-Jetson Orin NX 16GB（P3767-0000），因此不传 `--module-sku`。验证其他载板时，
-只替换下一节 prepare 命令中的 `--machine` 和 `--build-dir`；只有当前支持多个
-模组 SKU 的 AGX Orin machine 才必须额外传入 `--module-sku`。
+下面统一以 `recomputer-orin-super-j401` 为主流程示例。按照 NVIDIA 39.2.0
+配置，J401 系列支持 P3767 `0000`、`0001`、`0003`、`0004` 四个 Orin NX/Nano
+模组，因此主流程也必须明确传入 `--module-sku`。验证其他载板时，替换
+`--machine`、`--module-sku` 和 `--build-dir`，并为每个载板/模组组合使用独立
+build 目录。
 
 ### 0.5 一次 prepare 固定载板、build 目录和共享缓存
 
@@ -150,6 +151,7 @@ $HOME/.cache/yocto-seeed
 ```bash
 ./scripts/seeed/prepare-workspace.sh \
   --machine recomputer-orin-super-j401 \
+  --module-sku 0000 \
   --build-dir build-seeed-super-j401 \
   --cache-dir "$HOME/.cache/yocto-seeed"
 ```
@@ -174,14 +176,15 @@ Super J401 应显示：
 
 ```text
 Machine:   recomputer-orin-super-j401
+Module SKU: 0000
 ```
 
 如果这里显示其他 machine，不要继续编译，应重新执行本节 prepare 命令。
 
-Super J401 当前通过 `p3768-0000-p3767-0000.conf` 固定 P3767-0000 模组；脚本会
-拒绝给它传 `--module-sku`。如果以后同一载板需要支持其他 Orin NX/Nano 模组，
-必须先增加对应 NVIDIA module config、DTB/BPMP/BCT 映射和独立 build 目录，不能
-只复用当前 machine 并在刷写时临时修改 SKU。
+Super J401 当前通过 `p3768-0000-p3767-${SEEED_MODULE_SKU}.conf` 选择 P3767
+模组。`prepare-workspace.sh` 会校验 `0000`、`0001`、`0003`、`0004`，并把选择
+写入 `conf/seeed-machine.conf`；不能只复用当前 machine 并在刷写时临时修改
+SKU。
 
 ### 0.6 按顺序验证 metadata、DTB、BCT 和完整镜像
 
@@ -263,8 +266,8 @@ TensorRT/VPI SDK 内容和验收项见
   --build-dir build-seeed-super-j401
 ```
 
-这条命令只选择已经 prepare 的目录，不会修改其中的 machine；对于 AGX Orin，
-也不会修改目录中固化的 module SKU。首次构建必须先按第 0.5 节执行
+这条命令只选择已经 prepare 的目录，不会修改其中的 machine；对于 J401 和
+AGX Orin，也不会修改目录中固化的 module SKU。首次构建必须先按第 0.5 节执行
 `prepare-workspace.sh`。
 
 ### 0.7 校验刷写包并执行实机刷写
@@ -334,11 +337,12 @@ Successfully finished
   --no-activate
 ```
 
-`build.sh` 不会把一个已有 build 目录改成另一种 machine。AGX Orin 的
+`build.sh` 不会把一个已有 build 目录改成另一种 machine。J401 和 AGX Orin 的
 `prepare-workspace.sh --module-sku` 会写入 `conf/seeed-machine.conf`，同一 build
 目录也不能改成另一个 module SKU。载板或模组组合变化时必须使用新的 build 目录。
 
-当前 reServer J501X/J501X GMSL 和 Seeed AGX Orin Kit 接受
+当前 J401 系列接受 `0000`、`0001`、`0003`、`0004`；reServer J501X/J501X GMSL
+和 Seeed AGX Orin Kit 接受
 `0000`、`0001`、`0002`、`0004`、`0005`；reComputer Mini/Robo AGX Orin
 按提供的 L4T 配置接受 `0004`、`0005`。其中 `0001`、`0002` 复用 `0000`
 的 kernel DTB 和 BPMP DTB，但刷写包仍保留实际 `BOARDSKU` 并严格校验。
@@ -1025,6 +1029,7 @@ Tasks Summary: Attempted 13211 tasks ... all succeeded.
 ```bash
 ./scripts/seeed/prepare-workspace.sh \
   --machine recomputer-orin-super-j401 \
+  --module-sku 0000 \
   --build-dir build-seeed-super-j401 \
   --cache-dir "$HOME/.cache/yocto-seeed"
 ```

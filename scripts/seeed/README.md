@@ -1,14 +1,15 @@
 # Seeed carrier board build helpers
 
 These helpers support all Seeed machines in
-`layers/meta-seeed/conf/machine`. Prepare one build directory per machine and,
-for AGX Orin, per module SKU; the most recently prepared directory becomes
-active for later commands.
+`layers/meta-seeed/conf/machine`. Prepare one build directory per carrier and
+module SKU; the most recently prepared directory becomes active for later
+commands.
 
 ```bash
 ./scripts/seeed/build.sh machines
 ./scripts/seeed/prepare-workspace.sh \
   --machine recomputer-orin-super-j401 \
+  --module-sku 0000 \
   --build-dir build-seeed-super-j401
 ./scripts/seeed/build.sh current
 ./scripts/seeed/build.sh all
@@ -24,10 +25,11 @@ The validation script parses all 16 machines and compiles one complete DT set
 for each SoC family (`tegra234` and `tegra264`). It does not claim physical
 flash or peripheral validation.
 
-Use a separate build directory per machine when switching targets. Do not reuse
-an existing build directory for a different `MACHINE` or AGX Orin module SKU.
-AGX Orin machines require `prepare-workspace.sh --module-sku`; the selection is
-stored in `conf/seeed-machine.conf` and reused by later commands. An explicit
+Use a separate build directory per carrier and module when switching targets.
+Do not reuse an existing build directory for a different `MACHINE` or module
+SKU. Configurable J401 and AGX Orin machines require
+`prepare-workspace.sh --module-sku`; the selection is stored in
+`conf/seeed-machine.conf` and reused by later commands. An explicit
 `build.sh --build-dir` selects that prepared directory and makes it active for
 later commands. Add `--no-activate` for a one-command temporary selection;
 `--machine` verifies the prepared directory's machine.
@@ -36,7 +38,7 @@ later commands. Add `--no-activate` for a one-command temporary selection;
 installation checks, and the complete image build in order. It stops at the
 first failed stage.
 
-`build.sh current` prints both the carrier `MACHINE` and the fixed module SKU.
+`build.sh current` prints both the carrier `MACHINE` and the selected module SKU.
 `prepare-flash.sh` verifies that the tegraflash archive carries the same SKU
 before presenting the flash command.
 

@@ -16,41 +16,40 @@ See the
 ### Carrier and module parameters
 
 The current Seeed helper supports the following carrier-board `MACHINE`
-values. A fixed-module machine gets its module configuration from the machine
-file and must **not** be given `--module-sku`. Only the AGX Orin machine rows
-marked below accept `--module-sku`; use one build directory for each carrier
-and module combination.
+values. J401 carrier machines accept the four NVIDIA Orin NX/Nano module SKUs
+listed below; AGX Orin machines accept their listed SKUs. Use one build
+directory for each carrier and module combination. Thor carrier machines are
+currently fixed to the module shown in their machine file.
 
 | Carrier board | `MACHINE` | Module configuration | `--module-sku` |
 | --- | --- | --- | --- |
-| reComputer Industrial J401 | `recomputer-industrial-orin-j401` | Jetson Orin NX, `P3767-0000` | 不传 |
+| reComputer Industrial J401 | `recomputer-industrial-orin-j401` | Orin NX/Nano `P3767-0000`/`0001`/`0003`/`0004` | `0000`, `0001`, `0003`, or `0004` |
 | reComputer Mini AGX Orin J501X | `recomputer-mini-agx-orin-j501x` | AGX Orin `P3701-0004`/`P3701-0005` | `0004` or `0005` |
-| reComputer Orin J401 | `recomputer-orin-j401` | Jetson Orin NX, `P3767-0000` | 不传 |
-| reComputer Orin J40mini | `recomputer-orin-j40mini` | Jetson Orin NX, `P3767-0000` | 不传 |
-| reComputer Robotics J401 | `recomputer-orin-robotics-j401` | Jetson Orin NX, `P3767-0000` | 不传 |
-| reComputer Robotics J401 GMSL | `recomputer-orin-robotics-j401-gmsl` | Jetson Orin NX, `P3767-0000` | 不传 |
-| reComputer Super J401 | `recomputer-orin-super-j401` | Jetson Orin NX 16GB, `P3767-0000` | 不传 |
+| reComputer Orin J401 | `recomputer-orin-j401` | Orin NX/Nano `P3767-0000`/`0001`/`0003`/`0004` | `0000`, `0001`, `0003`, or `0004` |
+| reComputer Orin J40mini | `recomputer-orin-j40mini` | Orin NX/Nano `P3767-0000`/`0001`/`0003`/`0004` | `0000`, `0001`, `0003`, or `0004` |
+| reComputer Robotics J401 | `recomputer-orin-robotics-j401` | Orin NX/Nano `P3767-0000`/`0001`/`0003`/`0004` | `0000`, `0001`, `0003`, or `0004` |
+| reComputer Robotics J401 GMSL | `recomputer-orin-robotics-j401-gmsl` | Orin NX/Nano `P3767-0000`/`0001`/`0003`/`0004` | `0000`, `0001`, `0003`, or `0004` |
+| reComputer Super J401 | `recomputer-orin-super-j401` | Orin NX/Nano `P3767-0000`/`0001`/`0003`/`0004` | `0000`, `0001`, `0003`, or `0004` |
 | reComputer Robo AGX Orin J501X | `recomputer-robo-agx-orin-j501x` | AGX Orin `P3701-0004`/`P3701-0005` | `0004` or `0005` |
-| reComputer Rugged Orin J401 | `recomputer-rugged-orin-j401` | Jetson Orin NX, `P3767-0000` | 不传 |
+| reComputer Rugged Orin J401 | `recomputer-rugged-orin-j401` | Orin NX/Nano `P3767-0000`/`0001`/`0003`/`0004` | `0000`, `0001`, `0003`, or `0004` |
 | reComputer Thor Carrier J601 | `recomputer-thor-carrier-j601` | AGX Thor, `P3834-0008` | 不传 |
 | reComputer Thor Carrier J6014 | `recomputer-thor-carrier-j6014` | AGX Thor, `P3834-0000` | 不传 |
 | reComputer Thor Carrier J6015 | `recomputer-thor-carrier-j6015` | AGX Thor, `P3834-0008` | 不传 |
 | reServer AGX Orin J501X | `reserver-agx-orin-j501x` | AGX Orin | `0000`, `0001`, `0002`, `0004`, or `0005` |
 | reServer AGX Orin J501X GMSL | `reserver-agx-orin-j501x-gmsl` | AGX Orin | `0000`, `0001`, `0002`, `0004`, or `0005` |
-| reServer Industrial Orin J401 | `reserver-industrial-orin-j401` | Jetson Orin NX, `P3767-0000` | 不传 |
+| reServer Industrial Orin J401 | `reserver-industrial-orin-j401` | Orin NX/Nano `P3767-0000`/`0001`/`0003`/`0004` | `0000`, `0001`, `0003`, or `0004` |
 | Seeed AGX Orin Kit | `seeed-agx-orin-kit` | AGX Orin | `0000`, `0001`, `0002`, `0004`, or `0005` |
 
-For example, Super J401 is intentionally written without a module argument:
-its machine file directly requires the `P3768-0000` carrier plus the
-`P3767-0000` module configuration. Passing `--module-sku` to this machine is
-rejected by `prepare-workspace.sh`; it is not an omitted required parameter.
-For an AGX Orin carrier, select the SKU explicitly:
+For example, Super J401 must select the module explicitly. NVIDIA's 39.2.0
+configuration maps the P3768 carrier to P3767 module SKUs `0000`, `0001`,
+`0003`, and `0004`. Select the SKU explicitly and use a separate build
+directory for each choice:
 
 ```bash
 ./scripts/seeed/prepare-workspace.sh \
-  --machine reserver-agx-orin-j501x-gmsl \
-  --module-sku 0004 \
-  --build-dir build-seeed-reserver-j501x-gmsl-sku0004
+  --machine recomputer-orin-super-j401 \
+  --module-sku 0000 \
+  --build-dir build-seeed-super-j401-sku0000
 ```
 
 Quick start from a clean checkout:
@@ -58,6 +57,7 @@ Quick start from a clean checkout:
 ```bash
 ./scripts/seeed/prepare-workspace.sh \
   --machine recomputer-orin-super-j401 \
+  --module-sku 0000 \
   --build-dir build-seeed-super-j401
 ./scripts/seeed/build.sh metadata --build-dir build-seeed-super-j401
 ./scripts/seeed/build.sh dtb --build-dir build-seeed-super-j401
@@ -72,10 +72,10 @@ see [DIY-YOcto-recomputer-orin-super-j401.md](layers/meta-seeed/docs/DIY-YOcto-r
 The shorter script reference is [scripts/seeed/README.md](scripts/seeed/README.md).
 
 The Super J401 example currently targets the Jetson Orin NX 16GB module
-(`P3767-0000`) through its machine configuration, so it does not accept or
-need `--module-sku`. AGX Orin carrier configurations that support multiple
-module SKUs must select the module while preparing a separate build directory,
-for example:
+(`P3767-0000`) through the selected module SKU. J401 machines accept
+`0000`, `0001`, `0003`, and `0004`; AGX Orin carrier configurations support
+their machine-specific SKU sets. Always select the module while preparing a
+separate build directory, for example:
 
 ```bash
 ./scripts/seeed/prepare-workspace.sh \
@@ -141,6 +141,7 @@ packages needed for flashing.
 
         $ ./scripts/seeed/prepare-workspace.sh \
               --machine recomputer-orin-super-j401 \
+              --module-sku 0000 \
               --build-dir build-seeed-super-j401
 
    The script defaults to this machine, so the explicit options can be omitted
@@ -153,8 +154,9 @@ packages needed for flashing.
               --build-dir build-seeed-super-j401 \
               --output-dir ~/seeed-flash-recomputer-orin-super-j401
 
-   For AGX Orin machines with multiple module SKUs, pass `--module-sku` while
-   preparing a separate build directory. See the quick start above and the
+   For J401 and AGX Orin machines with multiple module SKUs, pass
+   `--module-sku` while preparing a separate build directory. See the quick
+   start above and the
    [complete BSP guide](layers/meta-seeed/docs/DIY-YOcto-recomputer-orin-super-j401.md)
    for the module-selection rules.
 

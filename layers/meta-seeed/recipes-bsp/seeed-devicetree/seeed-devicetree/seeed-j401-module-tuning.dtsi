@@ -1,0 +1,5 @@
+#if defined(SEEED_MODULE_SKU_0003) || defined(SEEED_MODULE_SKU_0004)
+/delete-node/ &{/opp-table-cluster0/opp-1510400000};
+/delete-node/ &{/opp-table-cluster1/opp-1510400000};
+/delete-node/ &{/opp-table-cluster2/opp-1510400000};
+#endif
