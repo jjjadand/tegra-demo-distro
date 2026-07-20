@@ -124,9 +124,10 @@ packages needed for flashing.
 
 ## Distributions
 
-Use the `--distro` option with `setup-env` to specify a distribution for your build,
-or customize the DISTRO setting in your `$BUILDDIR/conf/local.conf` to reference one
-of the supported distributions.
+The Seeed helper scripts use the `tegrademo` distribution by default. For an
+advanced generic Yocto build, customize the `DISTRO` setting in your
+`$BUILDDIR/conf/local.conf`, or pass the corresponding options directly to
+`setup-env`.
 
 Currently supported distributions are listed below:
 
