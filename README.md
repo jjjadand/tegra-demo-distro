@@ -89,28 +89,34 @@ packages needed for flashing.
 
 1. Clone this repository:
 
-        $ git clone https://github.com/OE4T/tegra-demo-distro.git
+        $ git clone https://github.com/jjjadand/seeed-tegra-demo-distro.git
+        $ cd seeed-tegra-demo-distro
 
-2. Switch to the appropriate branch, using [this page](https://oe4t.github.io/master/Which-branch-should-I-use.html)
-   for guidance.
+2. Use the `master` branch for the Seeed carrier-board extensions:
 
-3. Initialize the git submodules:
+        $ git switch master
 
-        $ cd tegra-demo-distro
-        $ git submodule update --init
+3. Prepare the default Seeed build workspace. This initializes the required
+   submodules and configures the Super J401 machine for Jetson Orin NX 16GB:
 
-4. Source the `setup-env` script to create a build directory,
-   specifying the MACHINE you want to configure as the default
-   for your builds. For example, to set up a build directory
-   called `build` that is set up for the Jetson Orin Nano
-   developer kit (with NVMe drive) and the default `tegrademo` distro:
+        $ ./scripts/seeed/prepare-workspace.sh \
+              --machine recomputer-orin-super-j401 \
+              --build-dir build-seeed-super-j401
 
-        $ . ./setup-env --machine jetson-orin-nano-devkit-nvme
+   The script defaults to this machine, so the explicit options can be omitted
+   when using the standard Super J401 example.
 
-   You can get a complete list of available options, MACHINE
-   names, and DISTRO names with
+4. Build the metadata, DTB, image, and flash package:
 
-        $ . ./setup-env --help
+        $ ./scripts/seeed/build.sh all --build-dir build-seeed-super-j401
+        $ ./scripts/seeed/prepare-flash.sh \
+              --build-dir build-seeed-super-j401 \
+              --output-dir ~/seeed-flash-recomputer-orin-super-j401
+
+   For AGX Orin machines with multiple module SKUs, pass `--module-sku` while
+   preparing a separate build directory. See the quick start above and the
+   [complete BSP guide](layers/meta-seeed/docs/DIY-YOcto-recomputer-orin-super-j401.md)
+   for the module-selection rules.
 
 5. Optional: Install pre-commit hook for commit autosigning using
 
