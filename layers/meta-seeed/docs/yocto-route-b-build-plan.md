@@ -23,11 +23,10 @@ Seeed runtime/development/production images
 完成后，每个 Seeed `MACHINE` 都应拥有独立的构建目录、镜像、刷写包和验证记录。
 没有实机的载板只能标记为“构建验证/未实机验证”，不能声明硬件支持已验证。
 
-> **当前状态：** 本文是路线 B 的产品化实施规划，不是已完成清单。当前仓库仍以
-> `demo-image-full` 为默认 image；它已有 CUDA runtime/libraries、CUDA samples、
-> TensorRT/VPI/MMAPI tests，并可通过 `populate_sdk` 生成包含 CUDA host tools 的
-> OE4T 标准 SDK。本文规划的 Seeed runtime/development/production images、产品
-> packagegroups 和发布 SDK 尚待实现，状态以第 10 节任务清单为准。
+> **当前状态：** 路线 B 第一阶段已经合入：runtime、containers、development、
+> tests packagegroups，以及 `seeed-image-jetson-runtime` 和
+> `seeed-image-jetson-development` 已实现。`demo-image-full` 继续作为未修改的
+> NVIDIA/OE4T 参考基线；production image、全载板构建矩阵和正式发布流程仍待完成。
 
 ## 2. 参考输入及使用边界
 
@@ -540,10 +539,10 @@ production image 在安全、账号、升级和产品应用策略确认后加入
 
 ## 10. 当前任务清单
 
-- [ ] 生成参考 `demo-image-full` 组件清单和差异报告。
-- [ ] 新增 runtime、containers、development、tests packagegroups。
-- [ ] 新增 runtime 和 development image recipes。
-- [ ] 为新 image 补充 SDK host/target task。
+- [x] 生成参考 `demo-image-full` 组件清单和差异报告。
+- [x] 新增 runtime、containers、development、tests packagegroups。
+- [x] 新增 runtime 和 development image recipes。
+- [x] 为新 image 补充 SDK host/target task。
 - [ ] 扩展构建脚本的 image/SDK/发布产物检查。
 - [ ] 在 `recomputer-orin-super-j401` 完成 runtime 构建。
 - [ ] 在 `recomputer-orin-super-j401` 完成 development 和 SDK 构建。

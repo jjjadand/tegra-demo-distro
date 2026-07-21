@@ -17,6 +17,9 @@ commands.
 ./scripts/seeed/build.sh dtb
 ./scripts/seeed/build.sh bootfiles
 ./scripts/seeed/build.sh image
+./scripts/seeed/build.sh image --image seeed-image-jetson-runtime
+./scripts/seeed/build.sh image --image seeed-image-jetson-development
+./scripts/seeed/build.sh sdk --image seeed-image-jetson-development
 ./scripts/seeed/prepare-flash.sh
 ./scripts/seeed/validate-all-machines.sh
 ```
@@ -37,6 +40,13 @@ later commands. Add `--no-activate` for a one-command temporary selection;
 `build.sh all` runs metadata validation, DTB/DTBO compilation, bootfiles
 installation checks, and the complete image build in order. It stops at the
 first failed stage.
+
+`demo-image-full` is the upstream runtime/sample reference. Use
+`seeed-image-jetson-runtime` for the matching Seeed runtime profile, or
+`seeed-image-jetson-development` when the target must include `nvcc`, NVIDIA
+development headers, build tools, samples, and tests. Running `build.sh sdk`
+for the development image produces CUDA host tools plus its matching AArch64
+development sysroot.
 
 `build.sh current` prints both the carrier `MACHINE` and the selected module SKU.
 `prepare-flash.sh` verifies that the tegraflash archive carries the same SKU

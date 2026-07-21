@@ -240,14 +240,21 @@ Tasks Summary: ... all succeeded.
 ./scripts/seeed/build.sh sdk
 ```
 
-当前默认 image 是 `demo-image-full`，它已经包含 `cuda-libraries`、CUDA samples、
-VPI tests、TensorRT tests 和 Tegra Multimedia API tests。其标准 Yocto SDK 通过
-`nativesdk-packagegroup-cuda-sdk-host` 提供 CUDA host tools，并携带与目标 rootfs
-匹配的交叉编译 sysroot。它属于 OE4T demo SDK，不等同于 Ubuntu JetPack SDK。
+上游默认 image `demo-image-full` 是 NVIDIA/OE4T 参考基线，包含 CUDA runtime、
+CUDA samples、TensorRT/VPI/MMAPI tests、OpenCV、多媒体和容器运行时，但不包含
+目标端 `nvcc` 及完整 CUDA/cuDNN/TensorRT/VPI 开发头文件。
 
-路线 B 规划的 `seeed-image-jetson-runtime`、`seeed-image-jetson-development`、
-产品 packagegroups 及逐 machine SDK 还没有实现；相关组件边界、CUDA/cuDNN/
-TensorRT/VPI SDK 内容和验收项见
+路线 B 已新增：
+
+- `seeed-image-jetson-runtime`：与参考包的 runtime、samples 和 tests 选择对齐，
+  不安装目标端完整工具链；
+- `seeed-image-jetson-development`：在 runtime 基础上加入 `cuda-toolkit`、目标端
+  `nvcc`、CUDA/cuDNN/TensorRT/VPI/OpenCV 开发文件、编译调试工具和测试样例；
+- 对 development image 执行 `populate_sdk`：生成 CUDA host tools 和匹配的
+  AArch64 开发 sysroot。
+
+它们仍是 Yocto/OE4T，不是 Ubuntu JetPack SDK Manager 环境。参考包静态审计见
+`layers/meta-seeed/docs/nvidia-demo-image-full-reference.md`，实施边界见
 `layers/meta-seeed/docs/yocto-route-b-build-plan.md`。
 
 如果希望一次完成本节的 metadata、DTB、BCT 和完整镜像构建，执行：
@@ -893,7 +900,7 @@ recipes-kernel/nvidia-kernel-oot/nvidia-kernel-oot_*.bbappend
 ./scripts/seeed/build.sh image
 ```
 
-`demo-image-full` 包含 Python、OpenSSH、Docker、CUDA runtime、cuDNN、TensorRT、VPI 和示例程序，但它不是 Ubuntu，也不是完整的 SDK Manager 开发环境。
+`demo-image-full` 包含 Python、OpenSSH、Docker、CUDA runtime、cuDNN、TensorRT、VPI 和示例程序，但它不是 Ubuntu，也不是完整的目标端 SDK。需要目标端 `nvcc` 和开发头文件时，构建 `seeed-image-jetson-development`；只需与参考包能力对齐时，构建 `seeed-image-jetson-runtime`。
 
 ### 9.1 添加应用和开发工具
 

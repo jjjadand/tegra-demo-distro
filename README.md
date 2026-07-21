@@ -84,13 +84,23 @@ separate build directory, for example:
   --build-dir build-seeed-reserver-j501x-gmsl-sku0004
 ```
 
-The default `demo-image-full` includes CUDA runtime libraries and samples,
-TensorRT/VPI components, and Tegra multimedia API tests. `build.sh sdk`
-generates the standard OE4T/Yocto cross-development SDK with CUDA host tools;
-it is not an Ubuntu JetPack SDK Manager environment. The productized Route B
-images, package groups, and per-machine release SDK are documented as a plan
-in [yocto-route-b-build-plan.md](layers/meta-seeed/docs/yocto-route-b-build-plan.md)
-and are not all implemented yet.
+The upstream `demo-image-full` remains the NVIDIA/OE4T reference baseline. It
+includes CUDA runtime libraries, samples, TensorRT/VPI/MMAPI tests, OpenCV,
+multimedia, and container support, but it does not contain target-side `nvcc`
+or the complete CUDA/cuDNN/TensorRT/VPI development headers.
+
+Route B now provides two Seeed images:
+
+- `seeed-image-jetson-runtime` aligns with the reference runtime, sample, and
+  test package selections without installing the target compiler toolchain.
+- `seeed-image-jetson-development` adds `cuda-toolkit`, target-side `nvcc`,
+  CUDA/cuDNN/TensorRT/VPI/OpenCV development files, build/debug tools, samples,
+  and tests. Its `populate_sdk` output also contains CUDA host tools and the
+  matching AArch64 development sysroot.
+
+These remain Yocto/OE4T images, not Ubuntu JetPack SDK Manager root filesystems.
+See the [reference audit](layers/meta-seeed/docs/nvidia-demo-image-full-reference.md)
+and [Route B document](layers/meta-seeed/docs/yocto-route-b-build-plan.md).
 
 For the generic upstream tegrademo workflow, continue with:
 
@@ -192,6 +202,8 @@ demo applications.
 | demo-image-sato   | X11 image with Sato UI                                        |
 | demo-image-weston | Wayland with Weston compositor                                |
 | demo-image-full   | Sato image plus nvidia-docker, openCV, multimedia API samples |
+| seeed-image-jetson-runtime | Seeed runtime aligned with the OE4T/NVIDIA reference stack |
+| seeed-image-jetson-development | Runtime plus complete target CUDA development SDK and tests |
 
 ### Update image demo
 
