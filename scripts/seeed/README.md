@@ -41,6 +41,10 @@ later commands. Add `--no-activate` for a one-command temporary selection;
 installation checks, and the complete image build in order. It stops at the
 first failed stage.
 
+Successful `image` and `flash-package` commands print the generated ext4,
+manifest, SBOM, testdata, and tegraflash archive paths. Successful `sdk`
+commands print the SDK deployment directory and generated installers.
+
 `demo-image-full` is the upstream runtime/sample reference. Use
 `seeed-image-jetson-runtime` for the matching Seeed runtime profile, or
 `seeed-image-jetson-development` when the target must include `nvcc`, NVIDIA

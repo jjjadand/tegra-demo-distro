@@ -195,8 +195,24 @@ run_bootfiles() {
     done
 }
 
+print_image_outputs() {
+    local deploy_dir
+    deploy_dir=$(bitbake -e "$IMAGE" | sed -n 's/^DEPLOY_DIR_IMAGE="\(.*\)"$/\1/p')
+    echo "==> Image outputs: $deploy_dir"
+    find "$deploy_dir" -maxdepth 1 \( -type f -o -type l \) \
+        -name "$IMAGE-$configured_machine.rootfs.*" -printf '  %p\n' | sort
+}
+
+print_sdk_outputs() {
+    local deploy_dir
+    deploy_dir=$(bitbake -e "$IMAGE" | sed -n 's/^DEPLOY_DIR_SDK="\(.*\)"$/\1/p')
+    echo "==> SDK outputs: $deploy_dir"
+    find "$deploy_dir" -maxdepth 1 -type f -printf '  %p\n' | sort
+}
+
 run_image() {
     bitbake "$IMAGE"
+    print_image_outputs
 }
 
 case "$action" in
@@ -226,9 +242,11 @@ case "$action" in
     flash-package)
         bitbake -f -c image_tegraflash_tar "$IMAGE"
         bitbake "$IMAGE"
+        print_image_outputs
         ;;
     sdk)
         bitbake -c populate_sdk "$IMAGE"
+        print_sdk_outputs
         ;;
     clean)
         bitbake -c clean "$IMAGE"
