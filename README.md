@@ -21,6 +21,27 @@ listed below; AGX Orin machines accept their listed SKUs. Use one build
 directory for each carrier and module combination. Thor carrier machines are
 currently fixed to the module shown in their machine file.
 
+`--module-sku` is the final four digits of the NVIDIA module part number:
+
+| Module family | `--module-sku` | Complete module number | Module model |
+| --- | --- | --- | --- |
+| P3767 | `0000` | `P3767-0000` | Jetson Orin NX 16GB |
+| P3767 | `0001` | `P3767-0001` | Jetson Orin NX 8GB |
+| P3767 | `0003` | `P3767-0003` | Jetson Orin Nano 8GB |
+| P3767 | `0004` | `P3767-0004` | Jetson Orin Nano 4GB |
+| P3701 | `0000` | `P3701-0000` | Jetson AGX Orin developer-kit module |
+| P3701 | `0001` | `P3701-0001` | Legacy/compatibility AGX Orin SKU; uses the `0000` DTB/BPMP configuration |
+| P3701 | `0002` | `P3701-0002` | Legacy/compatibility AGX Orin SKU; uses the `0000` DTB/BPMP configuration |
+| P3701 | `0004` | `P3701-0004` | Jetson AGX Orin 32GB |
+| P3701 | `0005` | `P3701-0005` | Jetson AGX Orin 64GB |
+| P3834 | not selectable | `P3834-0000` | Jetson T4000 |
+| P3834 | not selectable | `P3834-0008` | Jetson T5000 / AGX Thor developer-kit module |
+
+The public BSP identifies P3701 SKUs `0001` and `0002` as compatibility
+values rather than separate production module names. Check the module label or
+EEPROM before selecting one of these SKUs. Thor module selection is fixed by
+the selected `MACHINE`, so `--module-sku` must not be passed for Thor carriers.
+
 | Carrier board | `MACHINE` | Module configuration | `--module-sku` |
 | --- | --- | --- | --- |
 | reComputer Industrial J401 | `recomputer-industrial-orin-j401` | Orin NX/Nano `P3767-0000`/`0001`/`0003`/`0004` | `0000`, `0001`, `0003`, or `0004` |

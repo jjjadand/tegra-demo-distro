@@ -138,6 +138,26 @@ layers/meta-seeed/docs/board-support-status.md
 `--machine`、`--module-sku` 和 `--build-dir`，并为每个载板/模组组合使用独立
 build 目录。
 
+`--module-sku` 对应 NVIDIA 模组完整编号的最后四位：
+
+| 模组系列 | `--module-sku` | 完整模组编号 | 具体模组型号 |
+| --- | --- | --- | --- |
+| P3767 | `0000` | `P3767-0000` | Jetson Orin NX 16GB |
+| P3767 | `0001` | `P3767-0001` | Jetson Orin NX 8GB |
+| P3767 | `0003` | `P3767-0003` | Jetson Orin Nano 8GB |
+| P3767 | `0004` | `P3767-0004` | Jetson Orin Nano 4GB |
+| P3701 | `0000` | `P3701-0000` | Jetson AGX Orin 开发套件模组 |
+| P3701 | `0001` | `P3701-0001` | AGX Orin 历史/兼容 SKU，复用 `0000` DTB/BPMP 配置 |
+| P3701 | `0002` | `P3701-0002` | AGX Orin 历史/兼容 SKU，复用 `0000` DTB/BPMP 配置 |
+| P3701 | `0004` | `P3701-0004` | Jetson AGX Orin 32GB |
+| P3701 | `0005` | `P3701-0005` | Jetson AGX Orin 64GB |
+| P3834 | 不可选择 | `P3834-0000` | Jetson T4000 |
+| P3834 | 不可选择 | `P3834-0008` | Jetson T5000 / AGX Thor 开发套件模组 |
+
+当前 BSP 将 P3701 `0001`、`0002` 作为兼容编号处理，没有给出独立的量产商品
+型号名称；使用前应以模组标签或 EEPROM 信息确认。Thor 模组由 `MACHINE` 固定，
+不能额外传入 `--module-sku`。
+
 ### 0.5 一次 prepare 固定载板、build 目录和共享缓存
 
 建议把多个 machine 共用的下载和 sstate 缓存放在独立目录：
